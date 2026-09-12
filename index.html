@@ -519,14 +519,15 @@ const DEFAULT_SETTINGS = {
   mileageBonusCap: 15000,
   paintPerPanel: 2000,
   costItems: [
-    { id: 'steering',  label: 'เก็บพวงมาลัย',    amount: 800,  checked: false },
-    { id: 'seatFront', label: 'เก็บเบาะคู่หน้า',  amount: 1500, checked: false },
-    { id: 'seatRear',  label: 'เก็บเบาะหลัง',     amount: 2500, checked: false },
-    { id: 'tires',     label: 'เปลี่ยนยาง 4 ล้อ', amount: 8000, checked: false },
-    { id: 'suspension',label: 'เก็บช่วงล่าง',     amount: 5000, checked: false },
-    { id: 'aircon',    label: 'เก็บระบบแอร์',      amount: 3000, checked: false },
-    { id: 'battery',   label: 'เปลี่ยนแบตเตอรี่', amount: 3000, checked: false },
-    { id: 'brake',     label: 'เก็บระบบเบรก',     amount: 2500, checked: false },
+    { id: 'steering',  label: 'เก็บพวงมาลัย',    amount: 800 },
+    { id: 'seatFront', label: 'เก็บเบาะคู่หน้า',  amount: 1500 },
+    { id: 'seatRear',  label: 'เก็บเบาะหลัง',     amount: 2500 },
+    { id: 'tires',     label: 'เปลี่ยนยาง 4 ล้อ', amount: 8000 },
+    { id: 'suspension',label: 'เก็บช่วงล่าง',     amount: 5000 },
+    { id: 'aircon',    label: 'เก็บระบบแอร์',     amount: 3000 },
+    { id: 'battery',   label: 'เปลี่ยนแบตเตอรี่', amount: 3000 },
+    { id: 'brake',     label: 'เก็บระบบเบรก',     amount: 2500 },
+
   ],
 };
 
@@ -558,7 +559,7 @@ function loadSettings() {
         id: item.id || `item_${i}`,
         label: String(item.label || `รายการ ${i + 1}`),
         amount: Number(item.amount) || 0,      // ✅ บังคับเป็น number
-        checked: item.checked === true,        // ✅ บังคับเป็น boolean
+        
       }));
     }
 
@@ -585,16 +586,22 @@ function saveSettings(opts = {}) {
 function resetSettings() {
   if (!confirm('คืนค่าเริ่มต้นทั้งหมด?\n(การตั้งค่าปัจจุบันจะหายไป)')) return;
   settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+  checkedCostIds.clear();
+
   saveSettings({ silent: true });
   renderSettingsForm();
+  renderCostItemsEditor();
   renderCostList();
+
   alert('✅ คืนค่าเริ่มต้นเรียบร้อย');
+
 }
 
 /* ============================================================================
  *  💰 Price state
  * ========================================================================== */
 let collectedPrices = [];
+let checkedCostIds = new Set();
 
 function loadPrices() {
   try {
@@ -712,22 +719,32 @@ function calcPaintDeduction(panelCount) {
 }
 
 function calcCostDeduction() {
-  // ✅ ใช้ Boolean() ครอบ เพื่อ normalize
-  const items = settings.costItems.filter((c) => Boolean(c.checked) === true);
-  const total = items.reduce((s, c) => s + (Number(c.amount) || 0), 0);
+  const items = settings.costItems.filter((c) =>
+    checkedCostIds.has(c.id)
+  );
 
-  console.log('[calcCostDeduction] ตรวจสอบ:');
-  settings.costItems.forEach((c) => {
-    console.log(`  ${c.checked ? '☑' : '☐'} ${c.label}: ${c.amount} (checked=${c.checked}, type=${typeof c.checked})`);
+  const total = items.reduce(
+    (sum, c) => sum + (Number(c.amount) || 0),
+    0
+  );
+
+  console.log('[calcCostDeduction]', {
+    checkedIds: [...checkedCostIds],
+    items: items.map((c) => ({
+      id: c.id,
+      label: c.label,
+      amount: c.amount,
+    })),
+    total,
   });
-  console.log('[calcCostDeduction] items ติ๊กจริง:', items.length, 'รายการ');
-  console.log('[calcCostDeduction] total =', total);
 
   return {
     deduction: total,
     items,
     note: items.length > 0
-      ? items.map((c) => `${c.label} (${Number(c.amount).toLocaleString('th-TH')})`).join(' + ')
+      ? items
+          .map((c) => `${c.label} (${Number(c.amount).toLocaleString('th-TH')})`)
+          .join(' + ')
       : 'ไม่มีรายการซ่อม',
   };
 }
@@ -866,42 +883,63 @@ function renderCostItemsEditor() {
       if (idx === -1) return;
       if (!confirm(`ลบ "${settings.costItems[idx].label}"?`)) return;
       settings.costItems.splice(idx, 1);
+      checkedCostIds.delete(id);
+
       saveSettings();
       renderCostItemsEditor();
       renderCostList();
+      triggerRecalc();
+
     });
   });
 }
 
 /* ---- Cost List บนหน้าประเมิน ---- */
-/* ---- Cost List บนหน้าประเมิน ---- */
 function renderCostList() {
   const wrap = $('costList');
-  wrap.innerHTML = settings.costItems.map((item) => `
-    <label class="cost-item ${item.checked ? 'checked' : ''}" data-id="${item.id}">
-      <input type="checkbox" data-id="${item.id}" ${item.checked ? 'checked' : ''} />
-      <span class="label-text">${escapeHtml(item.label)}</span>
-      <span class="amount">−${fmt(item.amount)} ฿</span>
-    </label>
-  `).join('');
 
-  wrap.querySelectorAll('input[data-id]').forEach((cb) => {
+  wrap.innerHTML = settings.costItems.map((item) => {
+    const checked = checkedCostIds.has(item.id);
+
+    return `
+      <label class="cost-item ${checked ? 'checked' : ''}" data-id="${escapeHtml(item.id)}">
+        <input
+          type="checkbox"
+          data-cost-id="${escapeHtml(item.id)}"
+          ${checked ? 'checked' : ''}
+        />
+        <span class="label-text">${escapeHtml(item.label)}</span>
+        <span class="amount">−${fmt(item.amount)} ฿</span>
+      </label>
+    `;
+  }).join('');
+
+  wrap.querySelectorAll('input[data-cost-id]').forEach((cb) => {
     cb.addEventListener('change', (e) => {
-      const id = cb.dataset.id;
-      const idx = settings.costItems.findIndex((c) => c.id === id);
-      if (idx === -1) {
-        console.warn('[renderCostList] หา id ไม่เจอ:', id);
-        return;
+      const id = cb.dataset.costId;
+      const checked = e.target.checked === true;
+
+      if (checked) {
+        checkedCostIds.add(id);
+      } else {
+        checkedCostIds.delete(id);
       }
-      settings.costItems[idx].checked = e.target.checked === true;
-      saveSettings();
 
       const itemEl = cb.closest('.cost-item');
-      if (itemEl) itemEl.classList.toggle('checked', e.target.checked);
 
-      console.log('[renderCostList] ติ๊ก', id, '=', settings.costItems[idx].checked, '→ amount:', settings.costItems[idx].amount);
+      if (itemEl) {
+        itemEl.classList.toggle('checked', checked);
+      }
 
-      // ✅ คำนวณใหม่ทันทีหลังติ๊ก
+      console.log(
+        '[CHECKBOX]',
+        id,
+        'checked =',
+        checked,
+        'checkedCostIds =',
+        [...checkedCostIds]
+      );
+
       triggerRecalc();
     });
   });
@@ -930,7 +968,6 @@ $('btnAddCostItem').addEventListener('click', () => {
     id: 'custom_' + Date.now(),
     label: 'รายการใหม่',
     amount: 1000,
-    checked: false,
   });
   saveSettings();
   renderCostItemsEditor();
@@ -1167,7 +1204,7 @@ window.addEventListener('storage', (e) => {
  *  🚀 INIT
  * ========================================================================== */
 (function init() {
-  loadSettings();
+  settings = loadSettings();
   loadPrices();
 
   renderSettingsForm();
