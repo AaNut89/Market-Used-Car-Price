@@ -743,37 +743,41 @@ function roundDownToThousand(v) { return Math.floor(v / 1000) * 1000; }
 function computeAppraisal(input) {
   const { brand, year, mileage, paintPanelCount, marketBasePrice, marketMeta } = input;
 
+  // 1) คำนวณ Margin จากราคากลางตลาดก่อน (ราคาเสนอกรณีรถสวย ไม่ต้องเก็บงาน)
+  const marginPct = getMarginPct(brand);
+  const baseAfterMargin = marketBasePrice * (1 - marginPct / 100);
+
+  // 2) ปรับค่าไมล์ (+/-)
   const mileageAdj = calcMileageAdjustment({ carYear: year, actualMileage: mileage });
+
+  // 3) หักค่าทำสี (ตามจำนวนชิ้นจริง)
   const paintAdj = calcPaintDeduction(paintPanelCount);
+
+  // 4) หักงานซ่อม/เก็บสี (ตามที่ติ๊ก)
   const costAdj = calcCostDeduction();
 
-  // ✅ Debug: ดูค่าที่ใช้คำนวณจริง
-  console.log('[computeAppraisal] market =', marketBasePrice);
-  console.log('[computeAppraisal] mileage adj =', mileageAdj.adjustment);
-  console.log('[computeAppraisal] paint adj =', paintAdj.deduction);
-  console.log('[computeAppraisal] cost adj =', costAdj.deduction);
-
-  const adjustedPrice = marketBasePrice
+  // 5) ราคารับซื้อสุดท้าย = ราคาหลัง margin + ค่าไมล์ − ค่าทำสี − งานซ่อม
+  const netBuyingRaw = baseAfterMargin
     + mileageAdj.adjustment
     - paintAdj.deduction
     - costAdj.deduction;
 
-  if (adjustedPrice <= 0) {
+  if (netBuyingRaw <= 0) {
     const e = new Error('ราคาหลังหักลบต่ำกว่าศูนย์ ไม่สามารถประเมินได้');
     e.code = 'NEGATIVE'; throw e;
   }
 
-  const marginPct = getMarginPct(brand);
-  const netBuyingPrice = roundDownToThousand(adjustedPrice * (1 - marginPct / 100));
+  const netBuyingPrice = roundDownToThousand(netBuyingRaw);
 
   return {
     input,
     market: { marketBasePrice, ...marketMeta },
+    marginPct,
+    baseAfterMargin: Math.round(baseAfterMargin),
     mileageAdj,
     paintAdj,
     costAdj,
-    marginPct,
-    adjustedPrice: Math.round(adjustedPrice),
+    adjustedPrice: Math.round(netBuyingRaw),
     netBuyingPrice,
     priceRange: {
       min: roundDownToThousand(netBuyingPrice * PRICE_RANGE_MIN_FACTOR),
