@@ -874,6 +874,7 @@ function renderCostItemsEditor() {
 }
 
 /* ---- Cost List บนหน้าประเมิน ---- */
+/* ---- Cost List บนหน้าประเมิน ---- */
 function renderCostList() {
   const wrap = $('costList');
   wrap.innerHTML = settings.costItems.map((item) => `
@@ -887,7 +888,6 @@ function renderCostList() {
   wrap.querySelectorAll('input[data-id]').forEach((cb) => {
     cb.addEventListener('change', (e) => {
       const id = cb.dataset.id;
-      // ✅ หา item ด้วย id ไม่ใช่ index
       const idx = settings.costItems.findIndex((c) => c.id === id);
       if (idx === -1) {
         console.warn('[renderCostList] หา id ไม่เจอ:', id);
@@ -895,13 +895,15 @@ function renderCostList() {
       }
       settings.costItems[idx].checked = e.target.checked === true;
       saveSettings();
-      // ✅ อัปเดตแค่ class ไม่ rebuild ทั้ง list
+
       const itemEl = cb.closest('.cost-item');
       if (itemEl) itemEl.classList.toggle('checked', e.target.checked);
-      console.log('[renderCostList] ติ๊ก', id, '=', settings.costItems[idx].checked);
-    });
-      console.log('[renderCostList] ติ๊ก', id, '=', newChecked, '→ amount ที่จะหัก:', settings.costItems[idx].amount);
+
+      console.log('[renderCostList] ติ๊ก', id, '=', settings.costItems[idx].checked, '→ amount:', settings.costItems[idx].amount);
+
+      // ✅ คำนวณใหม่ทันทีหลังติ๊ก
       triggerRecalc();
+    });
   });
 }
 
