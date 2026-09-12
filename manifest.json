@@ -1,4 +1,3 @@
-cat > manifest.json << 'EOF'
 {
   "name": "ประเมินราคารถมือสอง",
   "short_name": "ประเมินรถ",
@@ -31,4 +30,3 @@ cat > manifest.json << 'EOF'
     }
   ]
 }
-EOF
