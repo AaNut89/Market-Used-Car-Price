@@ -845,58 +845,51 @@ function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 /* ============================================================================
  *  🚀 INIT
  * ========================================================================== */
-(function init() {
-  loadCollectedPrices();
-  console.log('🚗 App initialized');
-  console.log('💡 โหมดเก็บราคา: ติดตั้ง Tampermonkey script "taladrod-collector.user.js" เพื่อเก็บราคาอัตโนมัติ');
-})();
-
-/* ============================================================================
- *  📥 รับราคาจาก URL (เมื่อ Tampermonkey ส่งกลับมา)
- * ========================================================================== */
+/* ---------- อ่านราคาจาก URL (กรณี Tampermonkey ส่งมา) ---------- */
 function loadPricesFromUrl() {
-  const hash = window.location.hash;
-  if (!hash) return false;
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get('prices');
+  if (!raw) return false;
 
-  // hash format: #prices=385000,392000,401000
-  const m = hash.match(/prices=([\d,]+)/);
-  if (!m) return false;
+  const incoming = raw.split(',')
+    .map((s) => parseInt(s.replace(/[^\d]/g, ''), 10))
+    .filter((n) => Number.isFinite(n) && n > 10000);
 
-  const prices = m[1].split(',').map((s) => parseInt(s, 10)).filter((n) => Number.isFinite(n) && n > 0);
-  if (prices.length === 0) return false;
+  if (incoming.length === 0) return false;
 
-  // merge กับที่มีอยู่
-  const merged = [...new Set([...collectedPrices, ...prices])];
-  collectedPrices = merged;
+  // merge แบบ unique (ไม่ให้ซ้ำ)
+  collectedPrices = [...new Set([...collectedPrices, ...incoming])];
   saveCollectedPrices();
   renderPriceChips();
   syncTextarea();
 
-  // alert ผู้ใช้ว่าได้ราคามาแล้ว
-  setTimeout(() => {
-    alert(`✅ ได้รับ ${prices.length} ราคาจาก Taladrod\n\nรวมทั้งหมด: ${collectedPrices.length} รายการ`);
-  }, 400);
+  console.log(`[init] ได้ ${incoming.length} ราคาจาก URL`);
 
-  // เคลียร์ hash เพื่อไม่ให้ refresh แล้วซ้ำ
-  history.replaceState(null, '', window.location.pathname + window.location.search);
+  // แจ้งเตือน
+  setTimeout(() => {
+    alert(`✅ ได้รับ ${incoming.length} ราคาจาก Taladrod\nรวมทั้งหมด: ${collectedPrices.length} รายการ`);
+  }, 300);
+
+  // เคลียร์ URL ให้สะอาด (กัน refresh ซ้ำ)
+  history.replaceState(null, '', window.location.pathname);
 
   return true;
 }
 
-// เรียกตอน init
+/* ---------- Init ---------- */
 (function init() {
   loadCollectedPrices();
 
-  // ลองโหลดราคาจาก URL ก่อน
+  // ลองอ่านราคาจาก URL ก่อน
   const gotFromUrl = loadPricesFromUrl();
+
+  // ถ้าได้ราคาจาก URL → สลับไปโหมดเก็บราคาให้ผู้ใช้เห็น
   if (gotFromUrl) {
-    console.log('[init] ได้ราคาจาก URL');
+    switchMode('COLLECT');
   }
 
-  // ฟัง event hashchange (กรณีเปิดแอปใหม่ทับแท็บเดิม)
-  window.addEventListener('hashchange', loadPricesFromUrl);
-
   console.log('🚗 App initialized');
+  console.log('💡 โหมดเก็บราคา: ติดตั้ง Tampermonkey script "Taladrod Collector v3"');
 })();
 </script>
 </body>
