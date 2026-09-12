@@ -900,6 +900,7 @@ function renderCostList() {
       if (itemEl) itemEl.classList.toggle('checked', e.target.checked);
       console.log('[renderCostList] ติ๊ก', id, '=', settings.costItems[idx].checked);
     });
+      console.log('[renderCostList] ติ๊ก', id, '=', newChecked, '→ amount ที่จะหัก:', settings.costItems[idx].amount);
       triggerRecalc();
   });
 }
@@ -1212,6 +1213,13 @@ window.addEventListener('storage', (e) => {
     $('detail').classList.remove('show');
     alert('🗑️ ล้างราคาเรียบร้อย');
   });
+
+  // ⬇️⬇️⬇️ เพิ่ม 4 บรรทัดนี้ ⬇️⬇️⬇️
+  $('paintPanelCount').addEventListener('input', () => triggerRecalc());
+  $('mileage').addEventListener('input', () => triggerRecalc());
+  $('brand').addEventListener('change', () => triggerRecalc());
+  $('year').addEventListener('input', () => triggerRecalc());
+  // ⬆️⬆️⬆️ สิ้นสุดการเพิ่ม ⬆️⬆️⬆️
 
   console.log('🚗 App initialized');
 })();
