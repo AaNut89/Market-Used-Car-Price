@@ -14,7 +14,7 @@
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
   }
-  body { padding-bottom: env(safe-area-inset-bottom); }
+  body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
   header {
     background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
     color: #fff;
@@ -28,13 +28,14 @@
     display: flex; gap: 4px; justify-content: center;
     margin-top: 14px; padding: 4px;
     background: rgba(255,255,255,0.18);
-    border-radius: 999px; max-width: 360px;
+    border-radius: 999px; max-width: 320px;
     margin-left: auto; margin-right: auto;
   }
   .mode-toggle button {
-    flex: 1; padding: 8px 4px; border: none; border-radius: 999px;
-    background: transparent; color: #fff; font-size: 11px; font-weight: 700;
+    flex: 1; padding: 9px 8px; border: none; border-radius: 999px;
+    background: transparent; color: #fff; font-size: 12px; font-weight: 700;
     cursor: pointer; transition: all 0.2s; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
   }
   .mode-toggle button.active {
     background: #fff; color: #0d6efd;
@@ -51,7 +52,7 @@
   }
   label:first-child { margin-top: 0; }
   .label-hint { font-weight: 400; color: #94a3b8; font-size: 11px; }
-  input, select, textarea {
+  input[type="text"], input[type="number"], input[type="password"], select, textarea {
     width: 100%; padding: 13px 14px; border-radius: 12px;
     border: 1.5px solid #e0e3e8; font-size: 15px; outline: none;
     background: #fafbfc; transition: border 0.15s;
@@ -59,7 +60,7 @@
   }
   input:focus, select:focus, textarea:focus { border-color: #0d6efd; background: #fff; }
   textarea {
-    resize: vertical; min-height: 130px; line-height: 1.6;
+    resize: vertical; min-height: 120px; line-height: 1.6;
     font-size: 15px; font-family: ui-monospace, "Courier New", monospace;
     font-weight: 600; letter-spacing: 0.3px;
   }
@@ -84,9 +85,10 @@
   }
   .btn-secondary:active { background: #eff6ff; }
   .btn-secondary.taladrod { border-color: #f59e0b; color: #92400e; background: #fef3c7; }
-  .btn-secondary.taladrod:active { background: #fde68a; }
   .btn-secondary.one2car { border-color: #8b5cf6; color: #5b21b6; background: #ede9fe; }
-  .btn-secondary.one2car:active { background: #ddd6fe; }
+  .btn-secondary.danger { border-color: #dc2626; color: #dc2626; }
+  .btn-secondary.save { border-color: #16a34a; color: #fff; background: #16a34a; }
+  .btn-secondary.save:active { background: #15803d; }
   .result {
     background: linear-gradient(135deg, #10b981, #059669);
     color: #fff; border-radius: 16px; padding: 22px 18px;
@@ -126,13 +128,6 @@
     border-left: 3px solid #0d6efd;
   }
   .detail .note-box div { margin: 3px 0; }
-  .cache-badge {
-    background: #dcfce7; color: #166534;
-    padding: 8px 12px; border-radius: 10px;
-    font-size: 12px; font-weight: 700;
-    margin-top: 10px; text-align: center;
-    border-left: 3px solid #16a34a;
-  }
   .error {
     background: #fee2e2; color: #991b1b;
     padding: 14px 16px; border-radius: 12px;
@@ -152,21 +147,98 @@
     animation: spin 0.8s linear infinite; margin: 0 auto 14px;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-sub { font-size: 12px; color: #94a3b8; margin-top: 6px; }
   .info-banner {
     border-radius: 12px; padding: 11px 14px;
     font-size: 12px; line-height: 1.6;
     margin-bottom: 14px; display: flex; gap: 8px;
   }
-  .info-banner.blue   { background: #dbeafe; color: #1e40af; border-left: 3px solid #3b82f6; }
-  .info-banner.yellow { background: #fef3c7; color: #92400e; border-left: 3px solid #f59e0b; }
   .info-banner.green  { background: #dcfce7; color: #166534; border-left: 3px solid #16a34a; }
-  .info-banner.purple { background: #ede9fe; color: #5b21b6; border-left: 3px solid #8b5cf6; }
+  .info-banner.yellow { background: #fef3c7; color: #92400e; border-left: 3px solid #f59e0b; }
+  .info-banner.blue   { background: #dbeafe; color: #1e40af; border-left: 3px solid #3b82f6; }
+
+  .price-chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 10px; min-height: 32px;
+  }
+  .price-chip {
+    background: #dbeafe; color: #1e40af;
+    padding: 6px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .price-chip button {
+    background: transparent; border: none;
+    color: #1e40af; cursor: pointer;
+    font-size: 16px; padding: 0 0 0 2px;
+    font-family: inherit; line-height: 1;
+  }
   .footer {
     text-align: center; color: #94a3b8;
     font-size: 11px; padding: 8px 16px 24px;
   }
-  /* แถบสถานะ collector */
+
+  /* ---- Cost checkbox list ---- */
+  .cost-section-title {
+    font-size: 12px; font-weight: 800;
+    color: #64748b; text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 18px 0 8px;
+    border-top: 1px dashed #e2e8f0; padding-top: 14px;
+  }
+  .cost-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    background: #f8fafc; margin-bottom: 6px;
+    cursor: pointer; transition: background 0.15s;
+    user-select: none;
+  }
+  .cost-item:active { background: #eff6ff; }
+  .cost-item input[type="checkbox"] {
+    width: 20px; height: 20px; cursor: pointer;
+    accent-color: #0d6efd; flex-shrink: 0;
+  }
+  .cost-item .label-text { flex: 1; font-size: 13px; font-weight: 600; color: #374151; }
+  .cost-item .amount {
+    font-size: 13px; font-weight: 800; color: #dc2626;
+    font-variant-numeric: tabular-nums;
+  }
+  .cost-item.checked { background: #fef2f2; }
+  .cost-item.checked .amount { color: #dc2626; }
+
+  /* ---- Settings panel ---- */
+  .settings-group {
+    border-top: 1px dashed #e2e8f0;
+    padding-top: 16px; margin-top: 16px;
+  }
+  .settings-group:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+  .settings-group-title {
+    font-size: 13px; font-weight: 800; color: #0d6efd;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .setting-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .setting-row label {
+    flex: 1; font-size: 13px; font-weight: 600;
+    margin: 0; color: #374151;
+  }
+  .setting-row input {
+    width: 110px; padding: 9px 10px; font-size: 13px;
+    text-align: right;
+  }
+  .setting-row .unit {
+    font-size: 12px; color: #64748b; min-width: 36px;
+  }
+  .saved-badge {
+    display: inline-block; padding: 3px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700;
+    background: #dcfce7; color: #166534;
+    animation: fadeUp 0.3s ease;
+  }
+
+  /* ---- Collector bar ---- */
   .collector-bar {
     position: fixed; bottom: 0; left: 0; right: 0;
     background: #059669; color: #fff;
@@ -180,10 +252,7 @@
     width: 10px; height: 10px; border-radius: 50%;
     background: #fff; animation: pulse 1.2s infinite;
   }
-  @keyframes pulse {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
   .collector-bar button {
     margin-left: auto; padding: 5px 12px;
     background: rgba(255,255,255,0.2); color: #fff;
@@ -192,22 +261,22 @@
     font-weight: 700; cursor: pointer;
     font-family: inherit;
   }
-  .price-chips {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    margin-top: 8px; min-height: 32px;
+
+  /* ---- Tabs (settings sub-sections) ---- */
+  .sub-tabs {
+    display: flex; gap: 4px; padding: 4px;
+    background: #f1f5f9; border-radius: 10px;
+    margin-bottom: 14px;
   }
-  .price-chip {
-    background: #dbeafe; color: #1e40af;
-    padding: 5px 10px; border-radius: 999px;
-    font-size: 12px; font-weight: 700;
-    display: flex; align-items: center; gap: 4px;
-    animation: fadeUp 0.25s ease;
+  .sub-tabs button {
+    flex: 1; padding: 8px; border: none;
+    background: transparent; border-radius: 8px;
+    font-size: 12px; font-weight: 700; color: #64748b;
+    cursor: pointer; font-family: inherit;
   }
-  .price-chip button {
-    background: transparent; border: none;
-    color: #1e40af; cursor: pointer;
-    font-size: 14px; padding: 0 0 0 2px;
-    font-family: inherit; line-height: 1;
+  .sub-tabs button.active {
+    background: #fff; color: #0d6efd;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
 </style>
 </head>
@@ -215,124 +284,203 @@
 
 <header>
   <h1>🚗 ประเมินราคารถมือสอง</h1>
-  <p>แตะราคาที่ Taladrod → ใส่ในแอปอัตโนมัติ</p>
+  <p>แตะราคาที่ Taladrod → ส่งเข้าแอปอัตโนมัติ</p>
 
   <div class="mode-toggle">
-    <button id="modeCollect" class="active">📡 เก็บราคา</button>
-    <button id="modePaste">📋 แปะเอง</button>
-    <button id="modeDemo">🎮 สาธิต</button>
+    <button id="tabAppraisal" class="active">📋 ประเมินราคา</button>
+    <button id="tabSettings">⚙️ ตั้งค่า</button>
   </div>
 </header>
 
 <div class="container">
 
-  <div id="bannerCollect" class="info-banner green">
-    <span>📡</span>
-    <span>กดปุ่ม <b>เปิด Taladrod</b> ด้านล่าง → ระบบจะเปิดหน้าค้นหาให้เลย → <b>แตะที่ราคารถ</b> ที่อยากได้ → ราคาจะเด้งกลับมาใส่ในแอปอัตโนมัติ</span>
-  </div>
-  <div id="bannerPaste" class="info-banner blue" style="display:none;">
-    <span>📋</span>
-    <span>เปิด Taladrod / One2Car เอง แล้ว copy ราคามาวาง (ทีละบรรทัด) — ไม่ต้องติดตั้งอะไร</span>
-  </div>
-  <div id="bannerDemo" class="info-banner yellow" style="display:none;">
-    <span>🎮</span>
-    <span>โหมดสาธิต: ข้อมูลจำลอง ทดสอบสูตรคำนวณได้ทันที</span>
-  </div>
+  <!-- ============================================================
+       TAB 1: ประเมินราคา
+       ============================================================ -->
+  <div id="pageAppraisal">
 
-  <div class="card">
-    <label>ยี่ห้อ (Brand)</label>
-    <select id="brand">
-      <option value="Toyota">Toyota</option>
-      <option value="Honda">Honda</option>
-      <option value="Isuzu">Isuzu</option>
-      <option value="Mitsubishi">Mitsubishi</option>
-      <option value="Nissan">Nissan</option>
-      <option value="Mazda">Mazda</option>
-      <option value="MG">MG</option>
-      <option value="Ford">Ford</option>
-      <option value="Hyundai">Hyundai</option>
-      <option value="Kia">Kia</option>
-      <option value="BMW">BMW</option>
-      <option value="Mercedes-Benz">Mercedes-Benz</option>
-      <option value="Audi">Audi</option>
-      <option value="Volvo">Volvo</option>
-    </select>
-
-    <label>รุ่น (Model)</label>
-    <input id="model" placeholder="เช่น Vios, City, Camry" value="Camry" autocomplete="off" />
-
-    <div class="row">
-      <div>
-        <label>ปี ค.ศ.</label>
-        <input id="year" type="number" value="2019" min="1990" max="2030" inputmode="numeric" />
-      </div>
-      <div>
-        <label>เลขไมล์ (กม.)</label>
-        <input id="mileage" type="number" value="85000" min="0" step="1000" inputmode="numeric" />
-      </div>
+    <div class="info-banner green">
+      <span>📡</span>
+      <span>กดปุ่ม <b>เปิด Taladrod</b> ด้านล่าง → แตะราคารถที่ต้องการ → กด <b>📤 ส่งไปแอป</b> → ราคาเด้งกลับมาใส่ช่องอัตโนมัติ</span>
     </div>
 
-    <label>สภาพตัวถัง</label>
-    <select id="condition">
-      <option value="EXCELLENT">🌟 ยอดเยี่ยม (ไม่หัก)</option>
-      <option value="GOOD" selected>👍 ดี / มีรอยขีดข่วน</option>
-      <option value="SEVERE">⚠️ เคยชนหนัก / จมน้ำ</option>
-    </select>
+    <!-- ข้อมูลรถ -->
+    <div class="card">
+      <label>ยี่ห้อ (Brand)</label>
+      <select id="brand">
+        <option value="Toyota">Toyota</option>
+        <option value="Honda">Honda</option>
+        <option value="Isuzu">Isuzu</option>
+        <option value="Mitsubishi">Mitsubishi</option>
+        <option value="Nissan">Nissan</option>
+        <option value="Mazda">Mazda</option>
+        <option value="MG">MG</option>
+        <option value="Ford">Ford</option>
+        <option value="Hyundai">Hyundai</option>
+        <option value="Kia">Kia</option>
+        <option value="BMW">BMW</option>
+        <option value="Mercedes-Benz">Mercedes-Benz</option>
+        <option value="Audi">Audi</option>
+        <option value="Volvo">Volvo</option>
+      </select>
 
-    <div id="panelWrap">
+      <label>รุ่น (Model)</label>
+      <input id="model" type="text" placeholder="เช่น Vios, City, Camry" value="Camry" autocomplete="off" />
+
+      <div class="row">
+        <div>
+          <label>ปี ค.ศ.</label>
+          <input id="year" type="number" value="2019" min="1990" max="2030" inputmode="numeric" />
+        </div>
+        <div>
+          <label>เลขไมล์ (กม.)</label>
+          <input id="mileage" type="number" value="85000" min="0" step="1000" inputmode="numeric" />
+        </div>
+      </div>
+
       <label>จำนวนชิ้นที่ต้องทำสี</label>
-      <input id="paintPanelCount" type="number" value="0" min="0" max="20" inputmode="numeric" />
+      <input id="paintPanelCount" type="number" value="0" min="0" max="30" inputmode="numeric" />
     </div>
 
-    <!-- === โหมดเก็บราคา === -->
-    <div id="collectWrap">
-      <button class="btn-secondary taladrod" id="btnOpenTaladrod">
-        🟠 เปิด Taladrod (โหมดเก็บราคา)
-      </button>
-      <button class="btn-secondary one2car" id="btnOpenOne2Car">
-        🟣 เปิด One2Car (โหมดเก็บราคา)
-      </button>
-
-      <div style="font-size:11px;color:#64748b;margin-top:10px;line-height:1.6;background:#f8fafc;padding:10px;border-radius:10px;">
-        💡 <b>วิธีใช้:</b> กดปุ่มด้านบน → เปิด Taladrod → แตะที่ราคารถที่ต้องการ → ราคาจะเด้งกลับมาในช่องด้านล่างอัตโนมัติ
-      </div>
-    </div>
-
-    <!-- === โหมดแปะเอง === -->
-    <div id="pasteWrap" style="display:none;">
-      <label>
-        ราคาที่เก็บได้
-        <span class="label-hint">(บรรทัดละราคา — แก้ไข/ลบได้)</span>
-      </label>
-      <textarea id="pastePrices" placeholder="แตะราคาที่ Taladrod แล้วจะมาโผล่ที่นี่อัตโนมัติ..."></textarea>
+    <!-- ราคาที่เก็บได้ -->
+    <div class="card">
+      <label>ราคาที่เก็บได้ <span class="label-hint">(บรรทัดละราคา — แก้ไข/ลบได้)</span></label>
+      <textarea id="pricesInput" placeholder="แตะราคาที่ Taladrod แล้วจะมาโผล่ที่นี่..."></textarea>
 
       <div id="priceChips" class="price-chips"></div>
-
-      <div style="font-size:11px;color:#64748b;margin-top:10px;text-align:center;">
-        <span id="priceCount">0</span> ราคา • คลิกปุ่ม × เพื่อลบ
+      <div style="font-size:11px;color:#64748b;margin-top:8px;text-align:center;">
+        <span id="priceCount">0</span> ราคา • คลิก × เพื่อลบ
       </div>
 
-      <button class="btn-secondary" id="btnClearPrices">🗑️ ล้างราคาทั้งหมด</button>
+      <button class="btn-secondary danger" id="btnClearPrices">🗑️ ล้างราคาทั้งหมด</button>
     </div>
+
+    <!-- เปิด Taladrod -->
+    <div class="card">
+      <label style="margin-top:0;">🌐 เปิดเว็บตลาดรถ</label>
+      <button class="btn-secondary taladrod" id="btnOpenTaladrod">🟠 เปิด Taladrod (โหมดเก็บราคา)</button>
+      <button class="btn-secondary one2car" id="btnOpenOne2Car">🟣 เปิด One2Car (โหมดเก็บราคา)</button>
+      <div style="font-size:11px;color:#64748b;margin-top:10px;line-height:1.6;">
+        💡 <b>วิธีใช้:</b> กดปุ่มด้านบน → แตะราคารถที่ต้องการ → กด <b>📤 ส่งไปแอป</b> → ราคาจะเด้งกลับมาใส่ช่องให้ทันที
+      </div>
+    </div>
+
+    <!-- รายการหัก/ซ่อม -->
+    <div class="card" id="costSection">
+      <div class="cost-section-title" style="margin-top:0;border-top:none;padding-top:0;">🔧 งานซ่อม/เก็บสี (ติ๊ก = หัก)</div>
+      <div id="costList"></div>
+    </div>
+
+    <!-- ผลลัพธ์ -->
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <div id="loadingText">กำลังประมวลผล...</div>
+    </div>
+
+    <div id="error" class="error"></div>
+
+    <div id="result" class="result">
+      <div class="label">💰 ราคารับซื้อที่แนะนำ</div>
+      <div class="price" id="netPrice">-</div>
+      <div class="range" id="priceRange">-</div>
+    </div>
+
+    <div id="detail" class="detail"></div>
 
     <button id="btnCalc" class="btn-primary">💰 ประเมินราคาทันที</button>
   </div>
 
-  <div id="loading" class="loading">
-    <div class="spinner"></div>
-    <div id="loadingText">กำลังประมวลผล...</div>
-    <div class="loading-sub" id="loadingSub"></div>
+  <!-- ============================================================
+       TAB 2: ตั้งค่า
+       ============================================================ -->
+  <div id="pageSettings" style="display:none;">
+
+    <div class="info-banner blue">
+      <span>💾</span>
+      <span>ค่าตั้งทั้งหมดบันทึกอัตโนมัติลงเครื่องของคุณ (localStorage) ทันทีที่แก้ไข</span>
+    </div>
+
+    <!-- กำไร/Margin -->
+    <div class="card">
+      <div class="settings-group">
+        <div class="settings-group-title">💵 กำไร & Risk</div>
+        <div class="setting-row">
+          <label>กำไรขึ้นต้น (Gross Margin)</label>
+          <input id="setGrossMargin" type="number" min="0" max="50" step="1" />
+          <span class="unit">%</span>
+        </div>
+        <div class="setting-row">
+          <label>Risk รถตลาด (Toyota/Honda/Isuzu)</label>
+          <input id="setRiskMarket" type="number" min="0" max="30" step="1" />
+          <span class="unit">%</span>
+        </div>
+        <div class="setting-row">
+          <label>Risk รถแบรนด์รอง/ยุโรป</label>
+          <input id="setRiskPremium" type="number" min="0" max="30" step="1" />
+          <span class="unit">%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ค่าเสื่อมไมล์ -->
+    <div class="card">
+      <div class="settings-group">
+        <div class="settings-group-title">📏 ค่าเสื่อมเลขไมล์</div>
+        <div class="setting-row">
+          <label>เกณฑ์มาตรฐาน (กม./ปี)</label>
+          <input id="setMileagePerYear" type="number" min="5000" max="100000" step="1000" />
+          <span class="unit">กม.</span>
+        </div>
+        <div class="setting-row">
+          <label>หักเมื่อไมล์เกิน (บาท/กม.)</label>
+          <input id="setMileagePenalty" type="number" min="0" max="10" step="0.1" />
+          <span class="unit">฿</span>
+        </div>
+        <div class="setting-row">
+          <label>บวกเมื่อไมล์น้อย (บาท/กม.)</label>
+          <input id="setMileageBonus" type="number" min="0" max="10" step="0.1" />
+          <span class="unit">฿</span>
+        </div>
+        <div class="setting-row">
+          <label>เพดานโบนัสไมล์สูงสุด</label>
+          <input id="setMileageBonusCap" type="number" min="0" max="50000" step="1000" />
+          <span class="unit">฿</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ค่าทำสี -->
+    <div class="card">
+      <div class="settings-group">
+        <div class="settings-group-title">🎨 ค่าทำสี</div>
+        <div class="setting-row">
+          <label>หักต่อชิ้นที่ทำสี</label>
+          <input id="setPaintPerPanel" type="number" min="0" max="20000" step="100" />
+          <span class="unit">฿</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- รายการหัก/ซ่อม -->
+    <div class="card">
+      <div class="settings-group">
+        <div class="settings-group-title">🔧 รายการหัก/ซ่อม (แก้ชื่อ + ราคาได้)</div>
+        <div id="costItemsEditor"></div>
+        <button class="btn-secondary" id="btnAddCostItem">➕ เพิ่มรายการใหม่</button>
+      </div>
+    </div>
+
+    <!-- ปุ่มบันทึก/แก้ไข -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:13px;font-weight:700;color:#374151;">💾 บันทึกการตั้งค่า</div>
+        <span id="savedBadge" class="saved-badge" style="display:none;">บันทึกแล้ว ✓</span>
+      </div>
+      <button class="btn-secondary save" id="btnSaveSettings">💾 บันทึกค่าตอนนี้</button>
+      <button class="btn-secondary" id="btnResetSettings">🔄 คืนค่าเริ่มต้นทั้งหมด</button>
+    </div>
+
   </div>
-
-  <div id="error" class="error"></div>
-
-  <div id="result" class="result">
-    <div class="label">💰 ราคารับซื้อที่แนะนำ</div>
-    <div class="price" id="netPrice">-</div>
-    <div class="range" id="priceRange">-</div>
-  </div>
-
-  <div id="detail" class="detail"></div>
 
   <div class="footer">
     ระบบประเมินราคาเบื้องต้น • ผลลัพธ์อาจแตกต่างตามสภาพจริง<br/>
@@ -340,169 +488,408 @@
   </div>
 </div>
 
-<!-- แถบสถานะ Collector -->
+<!-- Collector Bar -->
 <div class="collector-bar" id="collectorBar">
   <div class="dot"></div>
-  <span id="collectorText">กำลังรับข้อมูลจาก Taladrod... แตะราคาที่หน้าเว็บได้เลย</span>
+  <span id="collectorText">กำลังรับข้อมูลจาก Taladrod...</span>
   <button id="btnStopCollector">หยุด</button>
 </div>
 
 <script>
 /* ============================================================================
- *  🚗 Used Car Appraisal — Collector Mode
+ *  🚗 Car Appraisal App v4
  *  ---------------------------------------------------------------------------
- *  Flow:
- *    1) User กด "เปิด Taladrod" → เปิด tab ใหม่ที่ค้นหาแล้ว
- *    2) ใน tab Taladrod ให้ user ติดตั้ง Tampermonkey script (taladrod-collector.user.js)
- *    3) User แตะราคา → script ส่งค่ากลับมาที่ localStorage
- *    4) หน้าแอปนี้ฟัง storage event → อัปเดตราคาที่เก็บได้แบบ real-time
+ *  Features:
+ *    - เก็บราคาจาก Taladrod/One2Car ผ่าน Tampermonkey
+ *    - ตั้งค่าตัวแปรได้เอง (margin, mileage, paint, cost items)
+ *    - Auto-save settings
+ *    - แท็บเดียว: ประเมินราคา / ตั้งค่า
  * ========================================================================== */
 
-const CONFIG = {
-  MILEAGE_PER_YEAR: 20000,
-  MILEAGE_PENALTY_PER_KM: 0.5,
-  MILEAGE_BONUS_PER_KM: 0.2,
-  MILEAGE_BONUS_CAP: 15000,
-  PAINT_PANEL_DEDUCTION: 2000,
-  MARGIN_MARKET: 20,
-  MARGIN_PREMIUM: 25,
-  MARKET_BRANDS: ['toyota', 'honda', 'isuzu'],
-  PRICE_RANGE_MIN_FACTOR: 0.95,
-  PRICE_RANGE_MAX_FACTOR: 1.03,
-  MIN_SAMPLE: 3,
+const APP_URL = 'https://aanut89.github.io/Market-Used-Car-Price/';
+
+/* ---------- Default Settings ---------- */
+const DEFAULT_SETTINGS = {
+  grossMargin: 20,
+  riskMarket: 2,
+  riskPremium: 7,
+  mileagePerYear: 20000,
+  mileagePenalty: 0.5,
+  mileageBonus: 0.2,
+  mileageBonusCap: 15000,
+  paintPerPanel: 2000,
+  costItems: [
+    { id: 'steering',  label: 'เก็บพวงมาลัย',         amount: 1500, checked: false },
+    { id: 'seatFront', label: 'เก็บเบาะคู่หน้า',       amount: 2500, checked: false },
+    { id: 'seatRear',  label: 'เก็บเบาะหลัง',          amount: 2000, checked: false },
+    { id: 'tires',     label: 'เปลี่ยนยาง 4 ล้อ',      amount: 8000, checked: false },
+    { id: 'suspension',label: 'เก็บช่วงล่าง',          amount: 5000, checked: false },
+    { id: 'aircon',    label: 'เก็บระบบแอร์',           amount: 3500, checked: false },
+    { id: 'battery',   label: 'เปลี่ยนแบตเตอรี่',       amount: 3000, checked: false },
+    { id: 'brake',     label: 'เก็บระบบเบรก',          amount: 2500, checked: false },
+  ],
 };
 
-const BASE_PRICE_TABLE = {
-  toyota: { vios: 549000, yaris: 559000, camry: 1459000, fortuner: 1599000, 'hilux revo': 899000 },
-  honda: { city: 599000, civic: 969000, 'hr-v': 979000, 'cr-v': 1399000 },
-  isuzu: { 'd-max': 799000, 'mu-x': 1199000 },
-  mitsubishi: { triton: 679000, xpander: 779000 },
-  nissan: { navara: 799000, almera: 549000 },
-  mazda: { 'mazda 2': 599000, 'mazda 3': 899000, 'cx-5': 1399000 },
-  mg: { mg5: 559000, 'mg zs': 689000 },
-  ford: { ranger: 899000, everest: 1449000 },
-  bmw: { '320i': 2499000, '520d': 3499000 },
-  'mercedes-benz': { 'c 220': 2699000, 'e 220': 3699000 },
-  audi: { a4: 2699000 },
-  volvo: { xc40: 2399000 },
-};
+const LS_SETTINGS = 'car_appraisal_settings_v4';
+const LS_PRICES   = 'car_appraisal_prices_v4';
+
+/* ---------- Config ---------- */
+const MARKET_BRANDS = ['toyota', 'honda', 'isuzu'];
+const PRICE_RANGE_MIN_FACTOR = 0.95;
+const PRICE_RANGE_MAX_FACTOR = 1.03;
 
 /* ============================================================================
- *  📡 Collector Sync — รับราคาจาก Tampermonkey script
+ *  ⚙️ Settings Manager
  * ========================================================================== */
-const LS_COLLECTED_PRICES = 'car_appraisal_collected_prices';
-const LS_COLLECT_SESSION = 'car_appraisal_collect_session';
-const CHANNEL_NAME = 'car_appraisal_sync';
+let settings = loadSettings();
 
-let broadcastChannel = null;
-try { broadcastChannel = new BroadcastChannel(CHANNEL_NAME); } catch (_) {}
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem(LS_SETTINGS);
+    if (!raw) return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+    const parsed = JSON.parse(raw);
+    return { ...JSON.parse(JSON.stringify(DEFAULT_SETTINGS)), ...parsed };
+  } catch (_) {
+    return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+  }
+}
 
-/** ราคาที่เก็บได้ (memory) */
+function saveSettings(opts = {}) {
+  try {
+    localStorage.setItem(LS_SETTINGS, JSON.stringify(settings));
+    if (!opts.silent) {
+      const badge = document.getElementById('savedBadge');
+      badge.style.display = 'inline-block';
+      clearTimeout(saveSettings._t);
+      saveSettings._t = setTimeout(() => { badge.style.display = 'none'; }, 1500);
+    }
+  } catch (e) {
+    console.warn('saveSettings error:', e);
+  }
+}
+
+function resetSettings() {
+  if (!confirm('คืนค่าเริ่มต้นทั้งหมด?\n(การตั้งค่าปัจจุบันจะหายไป)')) return;
+  settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+  saveSettings({ silent: true });
+  renderSettingsForm();
+  renderCostList();
+  alert('✅ คืนค่าเริ่มต้นเรียบร้อย');
+}
+
+/* ============================================================================
+ *  💰 Price state
+ * ========================================================================== */
 let collectedPrices = [];
 
-/** โหลดจาก localStorage ตอนเปิดแอป */
-function loadCollectedPrices() {
+function loadPrices() {
   try {
-    const raw = localStorage.getItem(LS_COLLECTED_PRICES);
-    if (raw) collectedPrices = JSON.parse(raw) || [];
+    const raw = localStorage.getItem(LS_PRICES);
+    collectedPrices = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(collectedPrices)) collectedPrices = [];
   } catch (_) { collectedPrices = []; }
-  renderPriceChips();
-  syncTextarea();
+  renderPrices();
 }
 
-/** บันทึกลง localStorage */
-function saveCollectedPrices() {
-  try {
-    localStorage.setItem(LS_COLLECTED_PRICES, JSON.stringify(collectedPrices));
-  } catch (_) {}
+function savePrices() {
+  try { localStorage.setItem(LS_PRICES, JSON.stringify(collectedPrices)); } catch (_) {}
 }
 
-/** เพิ่มราคาใหม่ (ตรวจซ้ำ) */
-function addPrice(price) {
-  const n = parseInt(price, 10);
-  if (!Number.isFinite(n) || n < 10000) return;
-  if (collectedPrices.includes(n)) {
-    console.log('[collector] ราคาซ้ำ:', n);
-    return;
-  }
-  collectedPrices.push(n);
-  saveCollectedPrices();
-  renderPriceChips();
-  syncTextarea();
+/* ✅ FIX: แยก function สำหรับ render โดยไม่ให้เกิด event loop */
+function renderPrices() {
+  // 1) อัปเดต textarea
+  const ta = document.getElementById('pricesInput');
+  const newText = collectedPrices.join('\n');
+  if (ta.value !== newText) ta.value = newText;
 
-  // flash effect
-  document.body.style.transition = 'background 0.3s';
-  document.body.style.background = '#dcfce7';
-  setTimeout(() => { document.body.style.background = ''; }, 300);
-}
-
-/** ลบราคา */
-function removePrice(idx) {
-  collectedPrices.splice(idx, 1);
-  saveCollectedPrices();
-  renderPriceChips();
-  syncTextarea();
-}
-
-/** ล้างทั้งหมด */
-function clearAllPrices() {
-  collectedPrices = [];
-  saveCollectedPrices();
-  renderPriceChips();
-  syncTextarea();
-}
-
-/** แสดง chips */
-function renderPriceChips() {
-  const el = document.getElementById('priceChips');
-  const cnt = document.getElementById('priceCount');
-  el.innerHTML = collectedPrices.map((p, i) =>
-    `<div class="price-chip">${p.toLocaleString('th-TH')}<button onclick="removePriceAt(${i})">×</button></div>`
+  // 2) อัปเดต chips
+  const chips = document.getElementById('priceChips');
+  chips.innerHTML = collectedPrices.map((p, i) =>
+    `<div class="price-chip">${p.toLocaleString('th-TH')}<button data-idx="${i}">×</button></div>`
   ).join('');
-  cnt.textContent = collectedPrices.length;
-}
 
-/** sync ไปยัง textarea (เพื่อให้ผู้ใช้แก้ไขได้) */
-function syncTextarea() {
-  const ta = document.getElementById('pastePrices');
-  if (!ta) return;
-  ta.value = collectedPrices.join('\n');
-}
+  // 3) อัปเดต count
+  document.getElementById('priceCount').textContent = collectedPrices.length;
 
-// global helper สำหรับ onclick
-window.removePriceAt = function(i) { removePrice(i); };
-
-/* ---------- ฟัง event จาก tab อื่น (Tampermonkey script ส่งมา) ---------- */
-window.addEventListener('storage', (e) => {
-  if (e.key === LS_COLLECTED_PRICES) {
-    try {
-      const incoming = JSON.parse(e.newValue) || [];
-      // merge แบบ unique
-      const merged = [...new Set([...collectedPrices, ...incoming])];
-      collectedPrices = merged;
-      saveCollectedPrices();
-      renderPriceChips();
-      syncTextarea();
-      console.log('[collector] ได้ราคาใหม่จาก storage event:', incoming);
-    } catch (_) {}
-  }
-});
-
-// ฟัง BroadcastChannel ด้วย (เร็วกว่า + ใช้ได้ข้าม origin บางกรณี)
-if (broadcastChannel) {
-  broadcastChannel.addEventListener('message', (e) => {
-    if (e.data && e.data.type === 'ADD_PRICE') {
-      addPrice(e.data.price);
-      console.log('[collector] ผ่าน BroadcastChannel:', e.data.price);
-    }
+  // 4) ผูก event ปุ่ม ×
+  chips.querySelectorAll('button[data-idx]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx, 10);
+      if (Number.isFinite(idx) && idx >= 0 && idx < collectedPrices.length) {
+        collectedPrices.splice(idx, 1);
+        savePrices();
+        renderPrices();
+      }
+    });
   });
 }
 
 /* ============================================================================
- *  🎯 เปิด Taladrod / One2Car พร้อมส่งพารามิเตอร์
+ *  📥 รับราคาจาก URL (Tampermonkey ส่งมา)
+ * ========================================================================== */
+function loadPricesFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get('prices');
+  if (!raw) return false;
+
+  const incoming = raw.split(',')
+    .map((s) => parseInt(s.replace(/[^\d]/g, ''), 10))
+    .filter((n) => Number.isFinite(n) && n > 10000);
+
+  if (incoming.length === 0) return false;
+
+  collectedPrices = [...new Set([...collectedPrices, ...incoming])];
+  savePrices();
+  renderPrices();
+
+  console.log(`[init] ได้ ${incoming.length} ราคาจาก URL`);
+
+  setTimeout(() => {
+    alert(`✅ ได้รับ ${incoming.length} ราคาจาก Taladrod\nรวมทั้งหมด: ${collectedPrices.length} รายการ`);
+  }, 300);
+
+  history.replaceState(null, '', window.location.pathname);
+  return true;
+}
+
+/* ============================================================================
+ *  📊 Appraisal Computation
+ * ========================================================================== */
+function filterOutliers(prices, trimRatio = 0.15) {
+  const valid = prices.map(Number).filter((p) => Number.isFinite(p) && p > 10000);
+  if (valid.length === 0) return { mean: 0, median: 0, sampleSize: 0 };
+  valid.sort((a, b) => a - b);
+  const trim = Math.floor(valid.length * trimRatio);
+  let cleaned = valid.slice(trim, valid.length - trim);
+  if (cleaned.length === 0) cleaned = valid;
+  const mean = cleaned.reduce((s, v) => s + v, 0) / cleaned.length;
+  return { mean: Math.round(mean), sampleSize: cleaned.length };
+}
+
+function calcMileageAdjustment({ carYear, actualMileage }) {
+  const currentYear = new Date().getFullYear();
+  const ageYears = Math.max(1, currentYear - carYear);
+  const expectedMileage = ageYears * settings.mileagePerYear;
+  const diff = actualMileage - expectedMileage;
+
+  if (diff > 0) {
+    return {
+      adjustment: -diff * settings.mileagePenalty,
+      expectedMileage, diff,
+      note: `วิ่งเกินเกณฑ์ ${diff.toLocaleString()} กม. หัก กม.ละ ${settings.mileagePenalty} บาท`,
+    };
+  }
+  const bonus = Math.min(Math.abs(diff) * settings.mileageBonus, settings.mileageBonusCap);
+  return {
+    adjustment: bonus,
+    expectedMileage, diff,
+    note: `วิ่งน้อยกว่าเกณฑ์ ${Math.abs(diff).toLocaleString()} กม. บวกเพิ่ม (สูงสุด ${settings.mileageBonusCap.toLocaleString()})`,
+  };
+}
+
+function calcPaintDeduction(panelCount) {
+  const d = panelCount * settings.paintPerPanel;
+  return {
+    deduction: d,
+    note: panelCount > 0
+      ? `ทำสี ${panelCount} ชิ้น × ${settings.paintPerPanel.toLocaleString()} = ${d.toLocaleString()} บาท`
+      : 'ไม่มีจุดทำสี',
+  };
+}
+
+function calcCostDeduction() {
+  const items = settings.costItems.filter((c) => c.checked);
+  const total = items.reduce((s, c) => s + (Number(c.amount) || 0), 0);
+  return {
+    deduction: total,
+    items,
+    note: items.length > 0
+      ? items.map((c) => `${c.label} (${c.amount.toLocaleString()})`).join(' + ')
+      : 'ไม่มีรายการซ่อม',
+  };
+}
+
+function getMarginPct(brand) {
+  return MARKET_BRANDS.includes(brand.toLowerCase())
+    ? settings.grossMargin + settings.riskMarket
+    : settings.grossMargin + settings.riskPremium;
+}
+
+function roundDownToThousand(v) { return Math.floor(v / 1000) * 1000; }
+
+function computeAppraisal(input) {
+  const { brand, year, mileage, paintPanelCount, marketBasePrice, marketMeta } = input;
+
+  const mileageAdj = calcMileageAdjustment({ carYear: year, actualMileage: mileage });
+  const paintAdj = calcPaintDeduction(paintPanelCount);
+  const costAdj = calcCostDeduction();
+
+  const adjustedPrice = marketBasePrice
+    + mileageAdj.adjustment
+    - paintAdj.deduction
+    - costAdj.deduction;
+
+  if (adjustedPrice <= 0) {
+    const e = new Error('ราคาหลังหักลบต่ำกว่าศูนย์ ไม่สามารถประเมินได้');
+    e.code = 'NEGATIVE'; throw e;
+  }
+
+  const marginPct = getMarginPct(brand);
+  const netBuyingPrice = roundDownToThousand(adjustedPrice * (1 - marginPct / 100));
+
+  return {
+    input,
+    market: { marketBasePrice, ...marketMeta },
+    mileageAdj,
+    paintAdj,
+    costAdj,
+    marginPct,
+    adjustedPrice: Math.round(adjustedPrice),
+    netBuyingPrice,
+    priceRange: {
+      min: roundDownToThousand(netBuyingPrice * PRICE_RANGE_MIN_FACTOR),
+      max: roundDownToThousand(netBuyingPrice * PRICE_RANGE_MAX_FACTOR),
+    },
+  };
+}
+
+/* ============================================================================
+ *  🎨 UI: Render
+ * ========================================================================== */
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => Number(n).toLocaleString('th-TH');
+
+/* ---- Settings Form ---- */
+function renderSettingsForm() {
+  $('setGrossMargin').value    = settings.grossMargin;
+  $('setRiskMarket').value     = settings.riskMarket;
+  $('setRiskPremium').value    = settings.riskPremium;
+  $('setMileagePerYear').value = settings.mileagePerYear;
+  $('setMileagePenalty').value = settings.mileagePenalty;
+  $('setMileageBonus').value   = settings.mileageBonus;
+  $('setMileageBonusCap').value= settings.mileageBonusCap;
+  $('setPaintPerPanel').value  = settings.paintPerPanel;
+}
+
+function renderCostItemsEditor() {
+  const wrap = $('costItemsEditor');
+  wrap.innerHTML = settings.costItems.map((item, i) => `
+    <div class="setting-row" style="gap:6px;">
+      <input type="text" data-cost-label="${i}" value="${escapeHtml(item.label)}"
+             style="flex:2;width:auto;padding:9px 10px;font-size:13px;text-align:left;" />
+      <input type="number" data-cost-amount="${i}" value="${item.amount}" min="0" step="100"
+             style="width:90px;padding:9px 10px;font-size:13px;text-align:right;" />
+      <span class="unit">฿</span>
+      <button data-cost-del="${i}"
+              style="background:#fee2e2;border:none;color:#dc2626;width:32px;height:32px;border-radius:8px;font-size:16px;font-weight:800;cursor:pointer;flex-shrink:0;">×</button>
+    </div>
+  `).join('');
+
+  // bind events
+  wrap.querySelectorAll('input[data-cost-label]').forEach((inp) => {
+    inp.addEventListener('input', (e) => {
+      const i = parseInt(inp.dataset.costLabel, 10);
+      settings.costItems[i].label = e.target.value;
+      saveSettings();
+      renderCostList();
+    });
+  });
+  wrap.querySelectorAll('input[data-cost-amount]').forEach((inp) => {
+    inp.addEventListener('input', (e) => {
+      const i = parseInt(inp.dataset.costAmount, 10);
+      settings.costItems[i].amount = parseFloat(e.target.value) || 0;
+      saveSettings();
+      renderCostList();
+    });
+  });
+  wrap.querySelectorAll('button[data-cost-del]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const i = parseInt(btn.dataset.costDel, 10);
+      if (!confirm(`ลบ "${settings.costItems[i].label}"?`)) return;
+      settings.costItems.splice(i, 1);
+      saveSettings();
+      renderCostItemsEditor();
+      renderCostList();
+    });
+  });
+}
+
+/* ---- Cost List บนหน้าประเมิน ---- */
+function renderCostList() {
+  const wrap = $('costList');
+  wrap.innerHTML = settings.costItems.map((item, i) => `
+    <label class="cost-item ${item.checked ? 'checked' : ''}">
+      <input type="checkbox" data-check="${i}" ${item.checked ? 'checked' : ''} />
+      <span class="label-text">${escapeHtml(item.label)}</span>
+      <span class="amount">−${fmt(item.amount)} ฿</span>
+    </label>
+  `).join('');
+
+  wrap.querySelectorAll('input[data-check]').forEach((cb) => {
+    cb.addEventListener('change', (e) => {
+      const i = parseInt(cb.dataset.check, 10);
+      settings.costItems[i].checked = e.target.checked;
+      saveSettings();
+      renderCostList();
+    });
+  });
+}
+
+/* ---- Settings bind (auto-save) ---- */
+function bindSettingInput(id, key, type = 'number') {
+  const el = $(id);
+  el.addEventListener('input', (e) => {
+    const v = type === 'number' ? (parseFloat(e.target.value) || 0) : e.target.value;
+    settings[key] = v;
+    saveSettings();
+  });
+}
+bindSettingInput('setGrossMargin',    'grossMargin');
+bindSettingInput('setRiskMarket',     'riskMarket');
+bindSettingInput('setRiskPremium',    'riskPremium');
+bindSettingInput('setMileagePerYear', 'mileagePerYear');
+bindSettingInput('setMileagePenalty', 'mileagePenalty');
+bindSettingInput('setMileageBonus',   'mileageBonus');
+bindSettingInput('setMileageBonusCap','mileageBonusCap');
+bindSettingInput('setPaintPerPanel',  'paintPerPanel');
+
+$('btnAddCostItem').addEventListener('click', () => {
+  settings.costItems.push({
+    id: 'custom_' + Date.now(),
+    label: 'รายการใหม่',
+    amount: 1000,
+    checked: false,
+  });
+  saveSettings();
+  renderCostItemsEditor();
+  renderCostList();
+});
+
+$('btnSaveSettings').addEventListener('click', () => {
+  saveSettings();
+  renderCostList();
+  alert('✅ บันทึกการตั้งค่าเรียบร้อย');
+});
+
+$('btnResetSettings').addEventListener('click', resetSettings);
+
+/* ============================================================================
+ *  🎯 Tabs
+ * ========================================================================== */
+function switchTab(tab) {
+  $('tabAppraisal').classList.toggle('active', tab === 'appraisal');
+  $('tabSettings').classList.toggle('active', tab === 'settings');
+  $('pageAppraisal').style.display = tab === 'appraisal' ? 'block' : 'none';
+  $('pageSettings').style.display = tab === 'settings' ? 'block' : 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+$('tabAppraisal').addEventListener('click', () => switchTab('appraisal'));
+$('tabSettings').addEventListener('click', () => switchTab('settings'));
+
+/* ============================================================================
+ *  🌐 เปิด Taladrod / One2Car
  * ========================================================================== */
 function buildTaladrodUrl({ brand, model, year }) {
-  // URL pattern ของ Taladrod: ใช้ nc: (name contains) + year range
   const kw = encodeURIComponent(`${brand} ${model}`);
   const y1 = Number(year) - 1;
   const y2 = Number(year) + 1;
@@ -516,229 +903,43 @@ function buildOne2CarUrl({ brand, model, year }) {
 
 function openCollector(site) {
   const input = {
-    brand: document.getElementById('brand').value,
-    model: document.getElementById('model').value.trim() || 'Camry',
-    year: Number(document.getElementById('year').value),
+    brand: $('brand').value,
+    model: $('model').value.trim() || 'Camry',
+    year: Number($('year').value),
   };
   if (!input.model) { alert('กรุณากรอกรุ่นรถก่อน'); return; }
 
-  // บันทึก session ว่ากำลังเก็บรถรุ่นนี้ (Tampermonkey จะอ่านเพื่อโชว์ banner)
   try {
-    localStorage.setItem(LS_COLLECT_SESSION, JSON.stringify({
+    localStorage.setItem('car_appraisal_collect_session', JSON.stringify({
       brand: input.brand, model: input.model, year: input.year,
       startedAt: Date.now(),
     }));
   } catch (_) {}
 
   const url = site === 'taladrod' ? buildTaladrodUrl(input) : buildOne2CarUrl(input);
-  console.log('[collector] เปิด:', url);
-
   window.open(url, '_blank');
 
-  // แสดงแถบสถานะ
-  document.getElementById('collectorBar').classList.add('show');
-  document.getElementById('collectorText').textContent =
-    `กำลังรับข้อมูลจาก ${site === 'taladrod' ? 'Taladrod' : 'One2Car'}... แตะราคาที่หน้าเว็บได้เลย`;
+  $('collectorBar').classList.add('show');
+  $('collectorText').textContent =
+    `รอรับราคาจาก ${site === 'taladrod' ? 'Taladrod' : 'One2Car'}... แตะราคาที่หน้าเว็บ`;
 }
-
-/* ============================================================================
- *  💰 Pricing Logic (เดิม)
- * ========================================================================== */
-function filterOutliers(prices, trimRatio = 0.15) {
-  const valid = prices.map(Number).filter((p) => Number.isFinite(p) && p > 10000);
-  if (valid.length === 0) return { mean: 0, median: 0, sampleSize: 0 };
-
-  valid.sort((a, b) => a - b);
-  const trim = Math.floor(valid.length * trimRatio);
-  let cleaned = valid.slice(trim, valid.length - trim);
-  if (cleaned.length === 0) cleaned = valid;
-
-  const mid = Math.floor(cleaned.length / 2);
-  const median = cleaned.length % 2 !== 0 ? cleaned[mid] : (cleaned[mid - 1] + cleaned[mid]) / 2;
-  const mean = cleaned.reduce((s, v) => s + v, 0) / cleaned.length;
-
-  return { mean: Math.round(mean), median: Math.round(median), sampleSize: cleaned.length };
-}
-
-function calcMileageAdjustment({ carYear, actualMileage }) {
-  const currentYear = new Date().getFullYear();
-  const ageYears = Math.max(1, currentYear - carYear);
-  const expectedMileage = ageYears * CONFIG.MILEAGE_PER_YEAR;
-  const diff = actualMileage - expectedMileage;
-
-  if (diff > 0) {
-    return {
-      adjustment: -diff * CONFIG.MILEAGE_PENALTY_PER_KM,
-      expectedMileage, diff,
-      note: `วิ่งเกินเกณฑ์ ${diff.toLocaleString()} กม. หัก กม.ละ ${CONFIG.MILEAGE_PENALTY_PER_KM} บาท`,
-    };
-  }
-  const bonus = Math.min(Math.abs(diff) * CONFIG.MILEAGE_BONUS_PER_KM, CONFIG.MILEAGE_BONUS_CAP);
-  return {
-    adjustment: bonus,
-    expectedMileage, diff,
-    note: `วิ่งน้อยกว่าเกณฑ์ ${Math.abs(diff).toLocaleString()} กม. บวกเพิ่ม (สูงสุด ${CONFIG.MILEAGE_BONUS_CAP.toLocaleString()})`,
-  };
-}
-
-function calcConditionDeduction({ condition, paintPanelCount = 0 }) {
-  switch (condition) {
-    case 'EXCELLENT': return { deduction: 0, note: 'สภาพยอดเยี่ยม ไม่หัก' };
-    case 'GOOD':
-    case 'FAIR': {
-      const d = paintPanelCount * CONFIG.PAINT_PANEL_DEDUCTION;
-      return {
-        deduction: d,
-        note: paintPanelCount > 0
-          ? `ทำสี ${paintPanelCount} ชิ้น × ${CONFIG.PAINT_PANEL_DEDUCTION.toLocaleString()} = ${d.toLocaleString()} บาท`
-          : 'สภาพดี ไม่มีจุดทำสี',
-      };
-    }
-    case 'SEVERE': {
-      const e = new Error('ระบบไม่สามารถประเมินราคารถชนหนักได้โดยอัตโนมัติ โปรดติดต่อเจ้าหน้าที่');
-      e.code = 'SEVERE_DAMAGE';
-      throw e;
-    }
-    default: return { deduction: 0, note: 'ไม่ระบุสภาพ' };
-  }
-}
-
-function getMarginPct(brand) {
-  return CONFIG.MARKET_BRANDS.includes(brand.toLowerCase())
-    ? CONFIG.MARGIN_MARKET : CONFIG.MARGIN_PREMIUM;
-}
-
-function roundDownToThousand(v) { return Math.floor(v / 1000) * 1000; }
-
-function computeAppraisal({ input, marketBasePrice, marketMeta = {} }) {
-  const { brand, year, mileage, condition, paintPanelCount } = input;
-  const mileageAdj = calcMileageAdjustment({ carYear: year, actualMileage: mileage });
-  const conditionAdj = calcConditionDeduction({ condition, paintPanelCount });
-
-  const adjustedPrice = marketBasePrice + mileageAdj.adjustment - conditionAdj.deduction;
-  if (adjustedPrice <= 0) {
-    const e = new Error('ราคาหลังหักลบต่ำกว่าศูนย์ ไม่สามารถประเมินได้');
-    e.code = 'NEGATIVE_ADJUSTED_PRICE'; throw e;
-  }
-
-  const marginPct = getMarginPct(brand);
-  const netBuyingPrice = roundDownToThousand(adjustedPrice * (1 - marginPct / 100));
-
-  return {
-    input,
-    market: { marketBasePrice, ...marketMeta },
-    mileageAdj, conditionAdj, marginPct,
-    adjustedPrice: Math.round(adjustedPrice),
-    netBuyingPrice,
-    priceRange: {
-      min: roundDownToThousand(netBuyingPrice * CONFIG.PRICE_RANGE_MIN_FACTOR),
-      max: roundDownToThousand(netBuyingPrice * CONFIG.PRICE_RANGE_MAX_FACTOR),
-    },
-  };
-}
-
-/* ============================================================================
- *  🎮 Demo Mode
- * ========================================================================== */
-function findBasePrice(brand, model) {
-  const b = brand.toLowerCase().trim();
-  const m = model.toLowerCase().trim();
-  const brandMap = BASE_PRICE_TABLE[b];
-  if (!brandMap) return 800000;
-  if (brandMap[m]) return brandMap[m];
-  for (const k of Object.keys(brandMap)) {
-    if (m.includes(k) || k.includes(m)) return brandMap[k];
-  }
-  const vals = Object.values(brandMap);
-  return Math.round(vals.reduce((a, c) => a + c, 0) / vals.length);
-}
-
-function simulateMarketData({ brand, model, year }) {
-  const baseNew = findBasePrice(brand, model);
-  const currentYear = new Date().getFullYear();
-  const age = Math.max(0, currentYear - year);
-  let depreciation = 0.15;
-  for (let i = 1; i < age; i++) depreciation += 0.08;
-  const marketPrice = Math.max(baseNew * (1 - depreciation), baseNew * 0.15);
-
-  const n = 15 + Math.floor(Math.random() * 6);
-  const samples = [];
-  for (let i = 0; i < n; i++) {
-    const variance = 1 + (Math.random() - 0.5) * 0.4;
-    samples.push(Math.round(marketPrice * variance / 1000) * 1000);
-  }
-  samples.push(Math.round(marketPrice * 0.25 / 1000) * 1000);
-  samples.push(Math.round(marketPrice * 2.20 / 1000) * 1000);
-  return { rawPrices: samples };
-}
-
-/* ============================================================================
- *  🎨 UI Logic
- * ========================================================================== */
-const $ = (id) => document.getElementById(id);
-const fmt = (n) => Number(n).toLocaleString('th-TH');
-let currentMode = 'COLLECT';
-
-// Mode toggle
-$('modeCollect').addEventListener('click', () => switchMode('COLLECT'));
-$('modePaste').addEventListener('click', () => switchMode('PASTE'));
-$('modeDemo').addEventListener('click', () => switchMode('DEMO'));
-
-function switchMode(mode) {
-  currentMode = mode;
-  $('modeCollect').classList.toggle('active', mode === 'COLLECT');
-  $('modePaste').classList.toggle('active', mode === 'PASTE');
-  $('modeDemo').classList.toggle('active', mode === 'DEMO');
-
-  $('bannerCollect').style.display = mode === 'COLLECT' ? 'flex' : 'none';
-  $('bannerPaste').style.display   = mode === 'PASTE'   ? 'flex' : 'none';
-  $('bannerDemo').style.display    = mode === 'DEMO'    ? 'flex' : 'none';
-  $('collectWrap').style.display   = mode === 'COLLECT' ? 'block' : 'none';
-  $('pasteWrap').style.display     = mode === 'PASTE'   ? 'block' : 'none';
-
-  $('result').classList.remove('show');
-  $('detail').classList.remove('show');
-  $('error').classList.remove('show');
-}
-
-// ปุ่มเปิด Taladrod / One2Car
 $('btnOpenTaladrod').addEventListener('click', () => openCollector('taladrod'));
 $('btnOpenOne2Car').addEventListener('click', () => openCollector('one2car'));
 
-// ปุ่มล้างราคา
-$('btnClearPrices').addEventListener('click', () => {
-  if (collectedPrices.length === 0) return;
-  if (!confirm(`ลบราคาทั้งหมด ${collectedPrices.length} รายการ?`)) return;
-  clearAllPrices();
-});
-
-// หยุด collector
 $('btnStopCollector').addEventListener('click', () => {
   $('collectorBar').classList.remove('show');
-  try { localStorage.removeItem(LS_COLLECT_SESSION); } catch (_) {}
+  try { localStorage.removeItem('car_appraisal_collect_session'); } catch (_) {}
 });
 
-// ซ่อน panel ถ้าเลือก Excellent / Severe
-$('condition').addEventListener('change', (e) => {
-  $('panelWrap').style.display = e.target.value === 'GOOD' ? 'block' : 'none';
-});
-
-// sync textarea → chips เมื่อผู้ใช้แก้เอง
-$('pastePrices').addEventListener('input', (e) => {
-  const lines = e.target.value.split(/[\n,]+/).map((s) => parseInt(s.replace(/[^\d]/g, ''), 10)).filter((n) => Number.isFinite(n) && n > 0);
-  collectedPrices = [...new Set(lines)];
-  saveCollectedPrices();
-  renderPriceChips();
-});
-
-// ปุ่มคำนวณ
+/* ============================================================================
+ *  💰 ปุ่มคำนวณ
+ * ========================================================================== */
 $('btnCalc').addEventListener('click', async () => {
   const input = {
     brand: $('brand').value,
     model: $('model').value.trim() || 'Camry',
     year: Number($('year').value),
     mileage: Number($('mileage').value),
-    condition: $('condition').value,
     paintPanelCount: Number($('paintPanelCount').value) || 0,
   };
 
@@ -755,45 +956,28 @@ $('btnCalc').addEventListener('click', async () => {
   $('btnCalc').disabled = true;
 
   try {
-    let result;
-
-    if (currentMode === 'DEMO') {
-      $('loadingText').textContent = 'กำลังสร้างข้อมูลจำลอง...';
-      $('loadingSub').textContent = '';
-      await sleep(400);
-      const sim = simulateMarketData(input);
-      const stats = filterOutliers(sim.rawPrices, 0.10);
-      result = computeAppraisal({
-        input, marketBasePrice: stats.mean,
-        marketMeta: {
-          sampleSize: stats.sampleSize, rawCount: sim.rawPrices.length,
-          sources: { demo: sim.rawPrices.length }, simulated: true, fromCache: false,
-        },
-      });
-    } else {
-      // COLLECT หรือ PASTE → ใช้ราคาที่เก็บได้
-      if (collectedPrices.length < CONFIG.MIN_SAMPLE) {
-        throw new Error(
-          `กรุณาเก็บราคาอย่างน้อย ${CONFIG.MIN_SAMPLE} รายการก่อน\n` +
-          `(ตอนนี้มี ${collectedPrices.length} รายการ)\n\n` +
-          `👉 กดปุ่ม "เปิด Taladrod (โหมดเก็บราคา)" แล้วแตะราคาที่หน้าเว็บ`
-        );
-      }
-
-      $('loadingText').textContent = 'กำลังกรอง Outlier และคำนวณ...';
-      await sleep(300);
-      const stats = filterOutliers(collectedPrices, 0.15);
-      if (stats.mean === 0) throw new Error('ไม่พบราคาที่ใช้ได้ (ต้องมากกว่า 10,000 บาท)');
-
-      result = computeAppraisal({
-        input, marketBasePrice: stats.mean,
-        marketMeta: {
-          sampleSize: stats.sampleSize, rawCount: collectedPrices.length,
-          sources: { collected: collectedPrices.length },
-          simulated: false, fromCache: false,
-        },
-      });
+    if (collectedPrices.length < 3) {
+      throw new Error(
+        `กรุณาเก็บราคาอย่างน้อย 3 รายการก่อน\n(ตอนนี้มี ${collectedPrices.length} รายการ)\n\n` +
+        `👉 กดปุ่ม "เปิด Taladrod (โหมดเก็บราคา)" แล้วแตะราคาที่หน้าเว็บ`
+      );
     }
+
+    $('loadingText').textContent = 'กำลังกรอง Outlier และคำนวณ...';
+    await sleep(250);
+
+    const stats = filterOutliers(collectedPrices, 0.15);
+    if (stats.mean === 0) throw new Error('ไม่พบราคาที่ใช้ได้ (ต้องมากกว่า 10,000 บาท)');
+
+    const result = computeAppraisal({
+      ...input,
+      marketBasePrice: stats.mean,
+      marketMeta: {
+        sampleSize: stats.sampleSize,
+        rawCount: collectedPrices.length,
+        sources: { collected: collectedPrices.length },
+      },
+    });
 
     renderResult(result);
   } catch (err) {
@@ -805,26 +989,30 @@ $('btnCalc').addEventListener('click', async () => {
   }
 });
 
+/* ============================================================================
+ *  🎨 Render Result
+ * ========================================================================== */
 function renderResult(d) {
   $('netPrice').innerHTML = fmt(d.netBuyingPrice) + ' <small>฿</small>';
   $('priceRange').textContent = 'ช่วงเสนอซื้อ: ' + fmt(d.priceRange.min) + ' – ' + fmt(d.priceRange.max) + ' ฿';
   $('result').classList.add('show');
 
-  let badge;
-  if (d.market.simulated) badge = '<span style="background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;">🎮 จำลอง</span>';
-  else badge = '<span style="background:#dbeafe;color:#1e40af;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;">📡 ราคาที่เก็บได้</span>';
+  const costItemsHTML = d.costAdj.items.length > 0
+    ? d.costAdj.items.map((c) => `<div>🔧 ${escapeHtml(c.label)}: −${fmt(c.amount)} ฿</div>`).join('')
+    : '<div>🔧 ไม่มีรายการซ่อม</div>';
 
   $('detail').innerHTML = `
-    <div style="text-align:center;padding:14px 0 6px;">${badge}</div>
     <div class="line"><span>ราคากลางตลาด</span><b class="blue">${fmt(d.market.marketBasePrice)} ฿</b></div>
     <div class="line"><span>ข้อมูลตัวอย่าง</span><b>${d.market.sampleSize} / ${d.market.rawCount} รายการ</b></div>
     <div class="line"><span>หัก/บวกค่าไมล์</span><b style="color:${d.mileageAdj.adjustment >= 0 ? '#059669' : '#dc2626'}">${d.mileageAdj.adjustment >= 0 ? '+' : ''}${fmt(Math.round(d.mileageAdj.adjustment))} ฿</b></div>
-    <div class="line"><span>หักค่าทำสี</span><b style="color:${d.conditionAdj.deduction > 0 ? '#dc2626' : '#6b7280'}">−${fmt(d.conditionAdj.deduction)} ฿</b></div>
+    <div class="line"><span>หักค่าทำสี</span><b style="color:${d.paintAdj.deduction > 0 ? '#dc2626' : '#6b7280'}">−${fmt(d.paintAdj.deduction)} ฿</b></div>
+    <div class="line"><span>หักงานซ่อม/เก็บสี</span><b style="color:${d.costAdj.deduction > 0 ? '#dc2626' : '#6b7280'}">−${fmt(d.costAdj.deduction)} ฿</b></div>
     <div class="line"><span>ราคาหลังหักลบ</span><b>${fmt(d.adjustedPrice)} ฿</b></div>
-    <div class="line"><span>Margin (${CONFIG.MARKET_BRANDS.includes(d.input.brand.toLowerCase()) ? 'รถตลาด' : 'แบรนด์รอง/ยุโรป'})</span><b>${d.marginPct}%</b></div>
+    <div class="line"><span>Margin รวม (${MARKET_BRANDS.includes(d.input.brand.toLowerCase()) ? 'รถตลาด' : 'แบรนด์รอง/ยุโรป'})</span><b>${d.marginPct}%</b></div>
     <div class="note-box">
       <div>📏 ${d.mileageAdj.note}</div>
-      <div>🎨 ${d.conditionAdj.note}</div>
+      <div>🎨 ${d.paintAdj.note}</div>
+      ${costItemsHTML}
     </div>
   `;
   $('detail').classList.add('show');
@@ -835,61 +1023,92 @@ function renderResult(d) {
 }
 
 function showError(msg) {
-  $('error').innerHTML = '⚠️ ' + msg.replace(/\n/g, '<br>');
+  $('error').innerHTML = '⚠️ ' + escapeHtml(msg).replace(/\n/g, '<br>');
   $('error').classList.add('show');
   $('error').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[c]);
 }
 
 function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
 /* ============================================================================
+ *  📡 รับจาก Storage / BroadcastChannel (Tampermonkey)
+ * ========================================================================== */
+window.addEventListener('storage', (e) => {
+  if (e.key === LS_PRICES && e.newValue) {
+    try {
+      const incoming = JSON.parse(e.newValue);
+      if (Array.isArray(incoming) && incoming.length > 0) {
+        const merged = [...new Set([...collectedPrices, ...incoming])];
+        if (merged.length !== collectedPrices.length) {
+          collectedPrices = merged;
+          savePrices();
+          renderPrices();
+        }
+      }
+    } catch (_) {}
+  }
+});
+
+/* ============================================================================
  *  🚀 INIT
  * ========================================================================== */
-/* ---------- อ่านราคาจาก URL (กรณี Tampermonkey ส่งมา) ---------- */
-function loadPricesFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const raw = params.get('prices');
-  if (!raw) return false;
-
-  const incoming = raw.split(',')
-    .map((s) => parseInt(s.replace(/[^\d]/g, ''), 10))
-    .filter((n) => Number.isFinite(n) && n > 10000);
-
-  if (incoming.length === 0) return false;
-
-  // merge แบบ unique (ไม่ให้ซ้ำ)
-  collectedPrices = [...new Set([...collectedPrices, ...incoming])];
-  saveCollectedPrices();
-  renderPriceChips();
-  syncTextarea();
-
-  console.log(`[init] ได้ ${incoming.length} ราคาจาก URL`);
-
-  // แจ้งเตือน
-  setTimeout(() => {
-    alert(`✅ ได้รับ ${incoming.length} ราคาจาก Taladrod\nรวมทั้งหมด: ${collectedPrices.length} รายการ`);
-  }, 300);
-
-  // เคลียร์ URL ให้สะอาด (กัน refresh ซ้ำ)
-  history.replaceState(null, '', window.location.pathname);
-
-  return true;
-}
-
-/* ---------- Init ---------- */
 (function init() {
-  loadCollectedPrices();
+  loadSettings();
+  loadPrices();
 
-  // ลองอ่านราคาจาก URL ก่อน
-  const gotFromUrl = loadPricesFromUrl();
+  renderSettingsForm();
+  renderCostItemsEditor();
+  renderCostList();
 
-  // ถ้าได้ราคาจาก URL → สลับไปโหมดเก็บราคาให้ผู้ใช้เห็น
-  if (gotFromUrl) {
-    switchMode('COLLECT');
-  }
+  loadPricesFromUrl();
+
+  // textarea → sync
+  $('pricesInput').addEventListener('input', (e) => {
+    const lines = e.target.value
+      .split(/[\n,]+/)
+      .map((s) => parseInt(s.replace(/[^\d]/g, ''), 10))
+      .filter((n) => Number.isFinite(n) && n > 0);
+    collectedPrices = [...new Set(lines)];
+    savePrices();
+    // update chips/count แต่ไม่แตะ textarea
+    const chips = $('priceChips');
+    chips.innerHTML = collectedPrices.map((p, i) =>
+      `<div class="price-chip">${p.toLocaleString('th-TH')}<button data-idx="${i}">×</button></div>`
+    ).join('');
+    $('priceCount').textContent = collectedPrices.length;
+    chips.querySelectorAll('button[data-idx]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.idx, 10);
+        if (Number.isFinite(idx) && idx >= 0 && idx < collectedPrices.length) {
+          collectedPrices.splice(idx, 1);
+          savePrices();
+          renderPrices();
+        }
+      });
+    });
+  });
+
+  $('btnClearPrices').addEventListener('click', () => {
+    if (collectedPrices.length === 0) {
+      alert('ยังไม่มีราคาที่เก็บไว้');
+      return;
+    }
+    if (!confirm(`ลบราคาทั้งหมด ${collectedPrices.length} รายการ?`)) return;
+    collectedPrices = [];
+    savePrices();
+    renderPrices();
+    $('result').classList.remove('show');
+    $('detail').classList.remove('show');
+    alert('🗑️ ล้างราคาเรียบร้อย');
+  });
 
   console.log('🚗 App initialized');
-  console.log('💡 โหมดเก็บราคา: ติดตั้ง Tampermonkey script "Taladrod Collector v3"');
 })();
 </script>
 </body>
