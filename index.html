@@ -850,6 +850,54 @@ function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
   console.log('🚗 App initialized');
   console.log('💡 โหมดเก็บราคา: ติดตั้ง Tampermonkey script "taladrod-collector.user.js" เพื่อเก็บราคาอัตโนมัติ');
 })();
+
+/* ============================================================================
+ *  📥 รับราคาจาก URL (เมื่อ Tampermonkey ส่งกลับมา)
+ * ========================================================================== */
+function loadPricesFromUrl() {
+  const hash = window.location.hash;
+  if (!hash) return false;
+
+  // hash format: #prices=385000,392000,401000
+  const m = hash.match(/prices=([\d,]+)/);
+  if (!m) return false;
+
+  const prices = m[1].split(',').map((s) => parseInt(s, 10)).filter((n) => Number.isFinite(n) && n > 0);
+  if (prices.length === 0) return false;
+
+  // merge กับที่มีอยู่
+  const merged = [...new Set([...collectedPrices, ...prices])];
+  collectedPrices = merged;
+  saveCollectedPrices();
+  renderPriceChips();
+  syncTextarea();
+
+  // alert ผู้ใช้ว่าได้ราคามาแล้ว
+  setTimeout(() => {
+    alert(`✅ ได้รับ ${prices.length} ราคาจาก Taladrod\n\nรวมทั้งหมด: ${collectedPrices.length} รายการ`);
+  }, 400);
+
+  // เคลียร์ hash เพื่อไม่ให้ refresh แล้วซ้ำ
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+
+  return true;
+}
+
+// เรียกตอน init
+(function init() {
+  loadCollectedPrices();
+
+  // ลองโหลดราคาจาก URL ก่อน
+  const gotFromUrl = loadPricesFromUrl();
+  if (gotFromUrl) {
+    console.log('[init] ได้ราคาจาก URL');
+  }
+
+  // ฟัง event hashchange (กรณีเปิดแอปใหม่ทับแท็บเดิม)
+  window.addEventListener('hashchange', loadPricesFromUrl);
+
+  console.log('🚗 App initialized');
+})();
 </script>
 </body>
 </html>
