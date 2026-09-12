@@ -900,6 +900,7 @@ function renderCostList() {
       if (itemEl) itemEl.classList.toggle('checked', e.target.checked);
       console.log('[renderCostList] ติ๊ก', id, '=', settings.costItems[idx].checked);
     });
+      triggerRecalc();
   });
 }
 
@@ -1088,6 +1089,42 @@ function renderResult(d) {
   setTimeout(() => {
     $('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 100);
+}
+
+function triggerRecalc() {
+  // ถ้ามี result แสดงอยู่แล้ว → คำนวณใหม่เลย
+  const hasResult = $('result').classList.contains('show');
+  if (!hasResult) return; // ยังไม่เคยกดประเมิน → ไม่ต้อง auto calc
+
+  // ใช้ค่าล่าสุดจาก UI
+  const input = {
+    brand: $('brand').value,
+    model: $('model').value.trim() || 'Camry',
+    year: Number($('year').value),
+    mileage: Number($('mileage').value),
+    paintPanelCount: Number($('paintPanelCount').value) || 0,
+  };
+
+  if (collectedPrices.length < 3) return;
+
+  try {
+    const stats = filterOutliers(collectedPrices, 0.15);
+    if (stats.mean === 0) return;
+
+    const result = computeAppraisal({
+      ...input,
+      marketBasePrice: stats.mean,
+      marketMeta: {
+        sampleSize: stats.sampleSize,
+        rawCount: collectedPrices.length,
+        sources: { collected: collectedPrices.length },
+      },
+    });
+
+    renderResult(result);
+  } catch (err) {
+    console.warn('[triggerRecalc] error:', err.message);
+  }
 }
 
 function showError(msg) {
