@@ -4,7 +4,26 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <meta name="theme-color" content="#0d6efd" />
-<title>🚗 ประเมินราคารถมือสอง</title>
+<title>ประเมินรถมือสอง</title>
+<!-- ⭐ ไอคอนแอป (Favicon + PWA) -->
+<link rel="icon" type="image/svg+xml" href="icon.svg" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<link rel="mask-icon" href="icon.svg" color="#0d6efd" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-startup-image" href="icon.svg" />
+<!-- ⭐ PWA / iOS Meta -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="ประเมินรถ" />
+<meta name="application-name" content="ประเมินรถ" />
+<meta name="mobile-web-app-capable" content="yes" />
+
+<!-- ⭐ Social share -->
+<meta property="og:title" content="🚗 ประเมินราคารถมือสอง" />
+<meta property="og:description" content="แตะราคาที่ Taladrod → ส่งเข้าแอปอัตโนมัติ" />
+<meta property="og:image" content="icon.svg" />
+<meta property="og:type" content="website" />
+
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -283,7 +302,37 @@
 <body>
 
 <header>
-  <h1>🚗 ประเมินราคารถมือสอง</h1>
+  <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:2px;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="42" height="42" style="flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.2));">
+      <defs>
+        <linearGradient id="h-bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05"/>
+        </linearGradient>
+      </defs>
+      <rect width="512" height="512" rx="112" fill="url(#h-bg)"/>
+      <path d="M256 90 L380 140 Q400 148 400 170 L400 300 Q400 380 256 435 Q112 380 112 300 L112 170 Q112 148 132 140 Z"
+            fill="#10b981" opacity="0.95"/>
+      <g transform="translate(0, 20)">
+        <path d="M140 290 Q140 260 165 245 L200 210 Q215 200 240 200 L300 200 Q320 200 335 212 L365 245 Q385 260 385 290 L385 310 Q385 325 370 325 L155 325 Q140 325 140 310 Z"
+              fill="#ffffff"/>
+        <path d="M215 210 L245 210 L245 245 L195 245 Z" fill="#0a58ca" opacity="0.85"/>
+        <path d="M260 210 L295 210 L320 245 L260 245 Z" fill="#0a58ca" opacity="0.85"/>
+        <rect x="155" y="270" width="30" height="18" rx="6" fill="#fbbf24"/>
+        <rect x="347" y="270" width="30" height="18" rx="6" fill="#fbbf24"/>
+        <circle cx="195" cy="330" r="22" fill="#1e293b"/>
+        <circle cx="195" cy="330" r="10" fill="#cbd5e1"/>
+        <circle cx="330" cy="330" r="22" fill="#1e293b"/>
+        <circle cx="330" cy="330" r="10" fill="#cbd5e1"/>
+      </g>
+      <g transform="translate(350, 120)">
+        <circle cx="0" cy="0" r="50" fill="#fbbf24" stroke="#ffffff" stroke-width="6"/>
+        <path d="M-22 0 L-6 18 L24 -18" stroke="#7c2d12" stroke-width="12"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </g>
+    </svg>
+    <h1 style="margin:0;">ประเมินราคารถมือสอง</h1>
+  </div>
   <p>แตะราคาที่ Taladrod → ส่งเข้าแอปอัตโนมัติ</p>
 
   <div class="mode-toggle">
@@ -490,6 +539,12 @@
 
 <!-- Collector Bar -->
 <div class="collector-bar" id="collectorBar">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="22" height="22" style="flex-shrink:0;">
+    <circle cx="256" cy="256" r="240" fill="rgba(255,255,255,0.2)"/>
+    <path d="M256 90 L380 140 Q400 148 400 170 L400 300 Q400 380 256 435 Q112 380 112 300 L112 170 Q112 148 132 140 Z" fill="#ffffff" opacity="0.9"/>
+    <path d="M-22 0 L-6 18 L24 -18" transform="translate(256,260) scale(1.6)"
+          stroke="#10b981" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </svg>
   <div class="dot"></div>
   <span id="collectorText">กำลังรับข้อมูลจาก Taladrod...</span>
   <button id="btnStopCollector">หยุด</button>
