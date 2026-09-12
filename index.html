@@ -698,13 +698,19 @@ function calcPaintDeduction(panelCount) {
 }
 
 function calcCostDeduction() {
-  const items = settings.costItems.filter((c) => c.checked);
+  // ✅ อ่านค่าจาก settings.costItems โดยตรง
+  const items = settings.costItems.filter((c) => c.checked === true);
   const total = items.reduce((s, c) => s + (Number(c.amount) || 0), 0);
+
+  // Debug log
+  console.log('[calcCostDeduction] items ติ๊ก:', items);
+  console.log('[calcCostDeduction] total =', total);
+
   return {
     deduction: total,
     items,
     note: items.length > 0
-      ? items.map((c) => `${c.label} (${c.amount.toLocaleString()})`).join(' + ')
+      ? items.map((c) => `${c.label} (${Number(c.amount).toLocaleString('th-TH')})`).join(' + ')
       : 'ไม่มีรายการซ่อม',
   };
 }
@@ -723,6 +729,12 @@ function computeAppraisal(input) {
   const mileageAdj = calcMileageAdjustment({ carYear: year, actualMileage: mileage });
   const paintAdj = calcPaintDeduction(paintPanelCount);
   const costAdj = calcCostDeduction();
+
+  // ✅ Debug: ดูค่าที่ใช้คำนวณจริง
+  console.log('[computeAppraisal] market =', marketBasePrice);
+  console.log('[computeAppraisal] mileage adj =', mileageAdj.adjustment);
+  console.log('[computeAppraisal] paint adj =', paintAdj.deduction);
+  console.log('[computeAppraisal] cost adj =', costAdj.deduction);
 
   const adjustedPrice = marketBasePrice
     + mileageAdj.adjustment
@@ -785,23 +797,40 @@ function renderCostItemsEditor() {
     </div>
   `).join('');
 
-  // bind events
+  // ✅ ใช้ 'change' event ไม่ใช่ 'input' → กันการ rebuild ระหว่างพิมพ์
+  // ✅ อัปเดต 2 ทาง: settings + DOM ทั้งหน้าประเมิน (cost list)
+
   wrap.querySelectorAll('input[data-cost-label]').forEach((inp) => {
-    inp.addEventListener('input', (e) => {
+    inp.addEventListener('change', (e) => {
       const i = parseInt(inp.dataset.costLabel, 10);
+      if (!settings.costItems[i]) return;
       settings.costItems[i].label = e.target.value;
       saveSettings();
-      renderCostList();
+      renderCostList(); // อัปเดตฝั่ง checkbox list
     });
   });
+
   wrap.querySelectorAll('input[data-cost-amount]').forEach((inp) => {
-    inp.addEventListener('input', (e) => {
+    // ✅ ใช้ 'change' สำหรับ commit + 'input' สำหรับ update UI ฝั่ง checkbox list แบบ real-time
+    inp.addEventListener('change', (e) => {
       const i = parseInt(inp.dataset.costAmount, 10);
+      if (!settings.costItems[i]) return;
       settings.costItems[i].amount = parseFloat(e.target.value) || 0;
       saveSettings();
-      renderCostList();
+      renderCostList(); // อัปเดตฝั่ง checkbox list
+    });
+
+    // ✅ real-time update ฝั่ง checkbox list แต่ไม่ rebuild editor (กัน cursor หลุด)
+    inp.addEventListener('input', (e) => {
+      const i = parseInt(inp.dataset.costAmount, 10);
+      if (!settings.costItems[i]) return;
+      settings.costItems[i].amount = parseFloat(e.target.value) || 0;
+      // อัปเดตเฉพาะข้อความ amount ใน checkbox list โดยไม่ rebuild
+      const amountEl = document.querySelector(`.cost-item[data-idx="${i}"] .amount`);
+      if (amountEl) amountEl.textContent = `−${(parseFloat(e.target.value) || 0).toLocaleString('th-TH')} ฿`;
     });
   });
+
   wrap.querySelectorAll('button[data-cost-del]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const i = parseInt(btn.dataset.costDel, 10);
@@ -818,7 +847,7 @@ function renderCostItemsEditor() {
 function renderCostList() {
   const wrap = $('costList');
   wrap.innerHTML = settings.costItems.map((item, i) => `
-    <label class="cost-item ${item.checked ? 'checked' : ''}">
+    <label class="cost-item ${item.checked ? 'checked' : ''}" data-idx="${i}">
       <input type="checkbox" data-check="${i}" ${item.checked ? 'checked' : ''} />
       <span class="label-text">${escapeHtml(item.label)}</span>
       <span class="amount">−${fmt(item.amount)} ฿</span>
@@ -828,9 +857,14 @@ function renderCostList() {
   wrap.querySelectorAll('input[data-check]').forEach((cb) => {
     cb.addEventListener('change', (e) => {
       const i = parseInt(cb.dataset.check, 10);
+      if (!settings.costItems[i]) return;
       settings.costItems[i].checked = e.target.checked;
       saveSettings();
-      renderCostList();
+      // ✅ อัปเดตแค่ class ให้ดูมีการติ๊ก ไม่ rebuild ทั้ง list
+      const itemEl = cb.closest('.cost-item');
+      if (itemEl) {
+        itemEl.classList.toggle('checked', e.target.checked);
+      }
     });
   });
 }
