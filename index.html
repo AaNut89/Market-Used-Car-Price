@@ -784,8 +784,11 @@ function computeAppraisal(input) {
     e.code = 'NEGATIVE'; throw e;
   }
 
-  const netBuyingPrice = roundDownToThousand(netBuyingRaw);
+// ❌ เดิม
+//const netBuyingPrice = roundDownToThousand(netBuyingRaw);
 
+// ✅ ใหม่ — ปัดเป็นจำนวนเต็ม (ไม่มีเศษสตางค์) แต่ไม่ปัดเป็นหลักพัน
+const netBuyingPrice = Math.round(netBuyingRaw);
   return {
     input,
     market: { marketBasePrice, ...marketMeta },
@@ -797,8 +800,10 @@ function computeAppraisal(input) {
     adjustedPrice: Math.round(netBuyingRaw),
     netBuyingPrice,
     priceRange: {
-      min: roundDownToThousand(netBuyingPrice * PRICE_RANGE_MIN_FACTOR),
-      max: roundDownToThousand(netBuyingPrice * PRICE_RANGE_MAX_FACTOR),
+      //min: roundDownToThousand(netBuyingPrice * PRICE_RANGE_MIN_FACTOR),
+      //max: roundDownToThousand(netBuyingPrice * PRICE_RANGE_MAX_FACTOR),
+      min: Math.round(netBuyingPrice * PRICE_RANGE_MIN_FACTOR),
+      max: Math.round(netBuyingPrice * PRICE_RANGE_MAX_FACTOR),
     },
   };
 }
